@@ -1,0 +1,17 @@
+[project]
+name = "hdb-price-baseline"
+version = "0.1.0"
+description = "Readable plain-PyTorch baseline for SC4001"
+requires-python = ">=3.11,<3.15"
+dependencies = [
+    "captum>=0.9.0",
+    "ipykernel>=7.3.0",
+    "matplotlib>=3.11.1",
+    "numpy>=2,<3",
+    "pandas>=3,<4",
+    "ray[tune]>=2.58.0",
+    "torch>=2,<3",
+]
+
+[tool.uv]
+package = false

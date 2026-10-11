@@ -1,0 +1,17 @@
+.vscode/
+handout/
+.DS_Store
+current/
+docs/
+solutions/
+*.docx
+*.pptx
+*.xlsx
+*.pdf
+*.ipynb
+.venv/
+outputs/
+__pycache__/
+assignment/build/
+ResaleFlatPrices.csv
+*.out
