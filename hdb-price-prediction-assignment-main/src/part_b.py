@@ -325,7 +325,7 @@ def fit_candidate(
     batch_size: int,
     device: torch.device,
 ) -> tuple[dict, list[dict], dict]:
-    """Train with Adam and early-stop on validation BCE loss.
+    """Train with Adam, stop on validation loss, and select by error.
 
     Args:
         model: Newly initialized CNN to train.
@@ -336,8 +336,7 @@ def fit_candidate(
         device: Device used for model training.
 
     Returns:
-        Best model state, per-epoch history, and validation metrics from the
-        best-loss checkpoint.
+        Lowest-error model state, per-epoch history, and its validation metrics.
     """
     model.to(device, memory_format=torch.channels_last)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
@@ -348,6 +347,8 @@ def fit_candidate(
     )
     best_state = None
     best_loss = float("inf")
+    best_error = float("inf")
+    selected_loss = float("inf")
     best_epoch = 0
     epochs_without_improvement = 0
     history = []
@@ -383,10 +384,16 @@ def fit_candidate(
             }
         )
         current_loss = float(validation_metrics["loss"])
-        if current_loss < best_loss - MIN_IMPROVEMENT:
-            best_loss = current_loss
+        current_error = float(validation_metrics["classification_error"])
+        if current_error < best_error or (
+            current_error == best_error and current_loss < selected_loss
+        ):
+            best_error = current_error
+            selected_loss = current_loss
             best_epoch = epoch
             best_state = copy.deepcopy(model.state_dict())
+        if current_loss < best_loss - MIN_IMPROVEMENT:
+            best_loss = current_loss
             epochs_without_improvement = 0
         else:
             epochs_without_improvement += 1
@@ -509,37 +516,18 @@ def train_search(
         )
         history_path = output_dir / f"history_{candidate_key}_{key}.csv"
         state_path = output_dir / f"trial_{candidate_key}_{key}.pt"
-        if history_path.exists():
-            history_frame = pd.read_csv(history_path)
-            history = history_frame.to_dict(orient="records")
-            best_row = history_frame.loc[history_frame["validation_loss"].idxmin()]
-            validation = {
-                "best_epoch": int(best_row["epoch"]),
-                "loss": float(best_row["validation_loss"]),
-                "classification_error": float(best_row["validation_error"]),
-                "accuracy": float(best_row["validation_accuracy"]),
-                "sensitivity": float(best_row["validation_sensitivity"]),
-                "specificity": float(best_row["validation_specificity"]),
-            }
-            state = (
-                torch.load(state_path, map_location=device, weights_only=True)
-                if state_path.exists()
-                else None
-            )
-        else:
-            set_seed(SEED)
-            model = build_model(model_name)
-            state, history, validation = fit_candidate(
-                model,
-                data["train"],
-                data["val"],
-                trial_learning_rate,
-                trial_batch_size,
-                device,
-            )
-            history_frame = pd.DataFrame(history)
-            history_frame.to_csv(history_path, index=False)
-            torch.save(state, state_path)
+        set_seed(SEED)
+        model = build_model(model_name)
+        state, history, validation = fit_candidate(
+            model,
+            data["train"],
+            data["val"],
+            trial_learning_rate,
+            trial_batch_size,
+            device,
+        )
+        pd.DataFrame(history).to_csv(history_path, index=False)
+        torch.save(state, state_path)
         histories[key] = history
         states[key] = state
         summary_rows.append(
@@ -561,19 +549,6 @@ def train_search(
     selected = summary.iloc[0].to_dict()
     selected_key = candidate_label(selected[candidate_key], candidate_key)
     selected_state = states[selected_key]
-    if selected_state is None:
-        set_seed(SEED)
-        selected_model = build_model(model_name)
-        selected_state, _selected_history, _selected_validation = fit_candidate(
-            selected_model,
-            data["train"],
-            data["val"],
-            float(selected["learning_rate"]),
-            int(selected["batch_size"]),
-            device,
-        )
-        states[selected_key] = selected_state
-        torch.save(selected_state, output_dir / f"trial_{candidate_key}_{selected_key}.pt")
     selected_model = build_model(model_name).to(
         device, memory_format=torch.channels_last
     )

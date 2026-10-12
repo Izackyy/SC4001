@@ -5,6 +5,7 @@ import random
 import statistics
 from dataclasses import replace
 from pathlib import Path
+from uuid import uuid4
 
 import numpy as np
 import pandas as pd
@@ -244,38 +245,30 @@ def run_a1_grid_search(
         selected trial's epoch history.
 
     Side Effects:
-        Starts or restores Ray Tune trials and writes ``grid_search_results.csv``.
+        Starts fresh Ray Tune trials and writes ``grid_search_results.csv``.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     os.environ["TUNE_DISABLE_AUTO_CALLBACK_LOGGERS"] = "1"
     ray_results = (output_dir / "ray_results").resolve()
-    experiment_path = ray_results / "a1_grid_search"
-    if experiment_path.exists() and any(
-        experiment_path.glob("experiment_state-*.json")
-    ):
-        tuner = tune.Tuner.restore(
-            str(experiment_path), trainable=train_ray_trial
-        )
-    else:
-        tuner = tune.Tuner(
-            tune.with_resources(train_ray_trial, {"cpu": 1}),
-            param_space={
-                "hidden_width": tune.grid_search([16, 32, 64, 128, 256]),
-                "embedding_dim": tune.grid_search([2, 4, 8, 12, 16]),
-                "seed": base_config.seed,
-                "data_path": str(DATA_PATH.resolve()),
-            },
-            tune_config=tune.TuneConfig(
-                metric="best_validation_rmse",
-                mode="min",
-                max_concurrent_trials=1,
-            ),
-            run_config=tune.RunConfig(
-                name="a1_grid_search",
-                storage_path=str(ray_results),
-                callbacks=[CSVLoggerCallback(), JsonLoggerCallback()],
-            ),
-        )
+    tuner = tune.Tuner(
+        tune.with_resources(train_ray_trial, {"cpu": 1}),
+        param_space={
+            "hidden_width": tune.grid_search([16, 32, 64, 128, 256]),
+            "embedding_dim": tune.grid_search([2, 4, 8, 12, 16]),
+            "seed": base_config.seed,
+            "data_path": str(DATA_PATH.resolve()),
+        },
+        tune_config=tune.TuneConfig(
+            metric="best_validation_rmse",
+            mode="min",
+            max_concurrent_trials=1,
+        ),
+        run_config=tune.RunConfig(
+            name=f"a1_grid_search_{uuid4().hex[:8]}",
+            storage_path=str(ray_results),
+            callbacks=[CSVLoggerCallback(), JsonLoggerCallback()],
+        ),
+    )
     results = tuner.fit()
     best_result = results.get_best_result(
         metric="best_validation_rmse", mode="min"
@@ -404,14 +397,14 @@ def save_architecture_diagram(
     default_parameter_count: int,
     selected_parameter_count: int,
 ) -> None:
-    """Write an A1 Mermaid block diagram and parameter-count notes.
+    """Write the default A1 baseline diagram and parameter-count notes.
 
     Args:
         output_path: Destination Markdown path.
-        config: Selected A1 model configuration.
-        input_width: Concatenated input width for the selected model.
+        config: Supplied default baseline configuration.
+        input_width: Concatenated input width for the default baseline.
         default_parameter_count: Count for the supplied baseline defaults.
-        selected_parameter_count: Count for the selected model on the
+        selected_parameter_count: Count for the search-selected model on the
             model-selection vocabulary.
 
     Returns:
@@ -421,13 +414,15 @@ def save_architecture_diagram(
         Writes an architecture diagram to ``output_path``.
     """
     embedding_dim = config.embedding_dims[0]
+    categorical_count = len(config.categorical_features)
+    continuous_count = len(config.continuous_features)
     diagram = f"""# A1 baseline architecture
 
 ```mermaid
 flowchart LR
-    Cat[4 categorical features] --> Emb[4 embedding tables, width {embedding_dim} each]
+    Cat[{categorical_count} categorical features] --> Emb[{categorical_count} embedding tables, width {embedding_dim} each]
     Emb --> Join[Concatenate]
-    Num[6 scaled continuous features] --> Join
+    Num[{continuous_count} scaled continuous features] --> Join
     Join --> Dense[Linear {input_width} to {config.hidden_width}]
     Dense --> Norm[LayerNorm {config.hidden_width}]
     Norm --> Relu[ReLU]
@@ -435,7 +430,7 @@ flowchart LR
     Output --> Price[De-normalize to Singapore dollars]
 ```
 
-- Supplied default baseline parameters (embedding width 8, hidden width 64): {default_parameter_count:,}
+- Supplied default baseline parameters (embedding width {embedding_dim}, hidden width {config.hidden_width}): {default_parameter_count:,}
 - Selected A1 model parameters on the model-selection vocabulary: {selected_parameter_count:,}
 """
     output_path.write_text(diagram, encoding="utf-8")
@@ -475,7 +470,8 @@ def fit_combined_refit(
     curve = []
     test_metrics = {}
     for epoch in range(1, epochs + 1):
-        train_rmse = train_one_epoch(model, train_loader, optimiser)
+        train_one_epoch(model, train_loader, optimiser)
+        train_rmse = calculate_metrics(model, train_data, config.batch_size)["rmse"]
         test_metrics = calculate_metrics(model, test_data, config.batch_size)
         curve.append(
             {
@@ -713,9 +709,9 @@ def main() -> None:
     save_validation_plot(selected_history, a1_output / "learning_curves.png")
     save_architecture_diagram(
         a1_output / "architecture.md",
-        selected_config,
-        sum(selected_config.embedding_dims)
-        + len(selected_config.continuous_features),
+        base_config,
+        sum(base_config.embedding_dims)
+        + len(base_config.continuous_features),
         trainable_parameter_count(default_model),
         trainable_parameter_count(selected_search_model),
     )

@@ -21,7 +21,6 @@ DATA_PATH = Path("hdb_price_prediction.csv")
 A1_OUTPUT = Path("outputs/part_a/a1")
 A3_OUTPUT = Path("outputs/part_a/a3")
 OUTPUT_DIR = Path("outputs/part_a/a4")
-ATTRIBUTION_SEED = 42
 
 
 def load_final_models(
@@ -41,11 +40,12 @@ def load_final_models(
     """
     a1_metrics = json.loads((A1_OUTPUT / "metrics.json").read_text())
     a3_metrics = json.loads((A3_OUTPUT / "metrics.json").read_text())
-    if int(a1_metrics["seed"]) != ATTRIBUTION_SEED:
-        raise ValueError("A1 checkpoint seed must match the A4 attribution seed.")
+    attribution_seed = int(a1_metrics["seed"])
+    if attribution_seed not in a3_metrics["seed_values"]:
+        raise ValueError("A3 has no final model for the A1 checkpoint seed.")
     config = replace(
         config,
-        seed=ATTRIBUTION_SEED,
+        seed=attribution_seed,
         hidden_width=int(a1_metrics["selected_hidden_width"]),
         embedding_dims=(int(a1_metrics["selected_embedding_dim"]),)
         * len(config.categorical_features),
@@ -62,7 +62,7 @@ def load_final_models(
         torch.load(A1_OUTPUT / "selected_model.pt", map_location="cpu", weights_only=True)
     )
 
-    a3_seed_path = A3_OUTPUT / "models" / f"seed_{ATTRIBUTION_SEED}.pt"
+    a3_seed_path = A3_OUTPUT / "models" / f"seed_{attribution_seed}.pt"
     a3_model = PriceModel(
         data["cardinalities"],
         data["target_mean"],
@@ -80,7 +80,7 @@ def load_final_models(
     metadata = {
         "a1": a1_metrics,
         "a3": a3_metrics,
-        "seed": ATTRIBUTION_SEED,
+        "seed": attribution_seed,
     }
     return models, data, metadata
 
