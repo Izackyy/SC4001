@@ -1,5 +1,3 @@
-"""Run Captum FeatureAblation for the final A1 and A3 HDB models."""
-
 import json
 from dataclasses import replace
 from pathlib import Path

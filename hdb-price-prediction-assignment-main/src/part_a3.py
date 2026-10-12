@@ -1,5 +1,3 @@
-"""Run the SC4001 A3 wide-and-deep lambda search and five-seed evaluation."""
-
 import json
 import statistics
 from dataclasses import replace

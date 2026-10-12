@@ -1,5 +1,3 @@
-"""Run the SC4001 Part A1 search and A2 five-seed ablations."""
-
 import copy
 import json
 import os

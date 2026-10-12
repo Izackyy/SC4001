@@ -1,5 +1,3 @@
-"""Train and evaluate the SC4001 Part B chest X-ray classifiers."""
-
 import argparse
 import copy
 import json
@@ -411,13 +409,14 @@ def save_search_plot(
     Args:
         histories: Per-trial epoch metrics keyed by learning rate or batch size.
         title: Figure title identifying the search.
-        output_path: PNG destination for the two-panel figure.
+        output_path: PNG destination for the two-panel and separate figures.
 
     Returns:
         None.
 
     Side Effects:
-        Writes a labeled Matplotlib figure to ``output_path``.
+        Writes the combined figure to ``output_path`` and separate validation
+        loss and accuracy figures beside it.
     """
     figure, axes = plt.subplots(1, 2, figsize=(12, 4.5))
     for label, history in histories.items():
@@ -435,6 +434,22 @@ def save_search_plot(
     figure.tight_layout()
     figure.savefig(output_path, dpi=180)
     plt.close(figure)
+
+    for metric, ylabel, filename in (
+        ("validation_loss", "Validation BCE loss", "validation_loss.png"),
+        ("validation_accuracy", "Validation accuracy", "validation_accuracy.png"),
+    ):
+        metric_figure, axis = plt.subplots(figsize=(7, 4.5))
+        for label, history in histories.items():
+            frame = pd.DataFrame(history)
+            axis.plot(frame["epoch"], frame[metric], marker=".", label=label)
+        axis.set(xlabel="Epoch", ylabel=ylabel, title=f"{ylabel} vs epoch")
+        axis.grid(alpha=0.25)
+        axis.legend(fontsize=8)
+        metric_figure.suptitle(title)
+        metric_figure.tight_layout(rect=(0, 0, 1, 0.95))
+        metric_figure.savefig(output_path.with_name(filename), dpi=180)
+        plt.close(metric_figure)
 
 
 def candidate_label(value, candidate_key: str) -> str:
