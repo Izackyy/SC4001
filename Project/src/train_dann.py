@@ -211,7 +211,7 @@ def train_epoch(model, discriminator, loader, target_tokens, optimizer,
     # Restart the stream at each epoch; the generator state makes resume exact.
     target_stream = cycle_target_indices(len(target_tokens), target_generator)
     squared_error, domain_loss, correct, coefficient_sum, count = 0.0, 0.0, 0, 0.0, 0
-    for step, (drug, protein, scores, offsets) in enumerate(islice(loader, batch_limit)):
+    for step, (drug, protein, scores, offsets, _) in enumerate(islice(loader, batch_limit)):
         drug, protein, scores = drug.to(device), protein.to(device), scores.to(device)
         optimizer.zero_grad(set_to_none=True)
         domain_optimizer.zero_grad(set_to_none=True)
@@ -304,18 +304,20 @@ def main():
         phase = f"kmer-residual-{phase}"
     directory = root / phase / config.dataset / config.split / f"seed{config.seed}{suffix}"
     config_path = directory / "config.json"
+    run_config = asdict(config)
+    run_config.pop("censored_loss")
     if config_path.exists():
         if not args.resume:
             raise SystemExit(f"Run exists at {directory}. Use --resume to continue it.")
         saved = json.loads(config_path.read_text(encoding="utf-8"))
-        current = json.loads(json.dumps(asdict(config)))
+        current = json.loads(json.dumps(run_config))
         if any(saved[key] != value for key, value in current.items() if key != "max_epochs"):
             raise SystemExit("Resume configuration differs from config.json (only max_epochs may change).")
     loaders, vocab = load_data(config)
     target_tokens, target_table = load_target_domain(config)
     print(f"Target domain: {(target_table.origin == 'validation').sum()} validation + {(target_table.origin == 'external').sum()} external = {len(target_table)} proteins; no own-split test sequences.", flush=True)
     directory.mkdir(parents=True, exist_ok=True)
-    config_path.write_text(json.dumps({**asdict(config), "token_lengths": vocab["max_len"][config.dataset],
+    config_path.write_text(json.dumps({**run_config, "token_lengths": vocab["max_len"][config.dataset],
                                       "vocab_sizes": {key: len(vocab[key]) + 1 for key in ("smiles", "protein")}}, indent=2) + "\n", encoding="utf-8")
     model = DeepDTA(len(vocab["smiles"]) + 1, len(vocab["protein"]) + 1, config).to(device)
     input_width = model.protein_encoder.out_dim + (

@@ -22,6 +22,7 @@ class Config:
     esm_dim: int = 1280
     esm_proj_dim: int = 0
     kmer_residual: bool = False
+    censored_loss: bool = False
     learning_rate: float = 1e-3
     batch_size: int = 256
     max_epochs: int = 100
@@ -41,6 +42,7 @@ def output_path(config: Config) -> Path:
         the Phase 2 layout byte-for-byte; another protein encoder gets its own root
         so the two never share a run directory. A widened ESM projection gets a
         further root of its own, so the first ESM grid's results stay untouched.
+        CensoredMSE training also gets a separate prefixed root.
     """
     root = Path(os.environ.get("SC4001_OUTPUT_ROOT", Path(__file__).resolve().parents[1] / "outputs"))
     suffix = "-smoke" if config.smoke else ""
@@ -49,4 +51,6 @@ def output_path(config: Config) -> Path:
         phase = f"esm-proj{config.esm_proj_dim}"
     if config.kmer_residual:
         phase = f"kmer-residual-{phase}"
+    if config.censored_loss:
+        phase = f"censored-loss-{phase}"
     return root / phase / config.dataset / config.split / f"seed{config.seed}{suffix}"

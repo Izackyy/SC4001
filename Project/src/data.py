@@ -40,18 +40,19 @@ class PairDataset(Dataset):
         return len(self.scores)
 
     def __getitem__(self, index):
-        """Return drug tokens, protein tokens, a scalar score and a scalar offset.
+        """Return drug tokens, protein tokens, score, offset and censor flag.
 
         Args:
             index: Pair position in this partition.
 
         Returns:
-            Four tensors suitable for default DataLoader collation. The offset is 0
-            unless a baseline offset was supplied.
+            Five tensors suitable for default DataLoader collation. The offset is 0
+            unless a baseline offset was supplied; the censor flag is float32.
         """
         return (self.drug_tokens[self.drug_indices[index]],
                 self.prot_tokens[self.prot_indices[index]],
-                self.scores[index], self.offsets[index])
+                self.scores[index], self.offsets[index],
+                torch.tensor(self.censored[index], dtype=torch.float32))
 
 
 def processed_csv(data_dir: Path, name: str) -> Path:

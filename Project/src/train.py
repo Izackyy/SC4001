@@ -86,6 +86,8 @@ def parse_args():
                              "model's output, so the network learns only the correction on top "
                              "of it. Needs src.kmer_offsets to have been run for this dataset "
                              "and split; training pairs use out-of-fold offsets.")
+    parser.add_argument("--censored-loss", action="store_true",
+                        help="Use CensoredMSE for training; a censored score is an upper bound.")
     parser.add_argument("--resume", action="store_true", help="Continue from last.pt if present.")
     parser.add_argument("--smoke", action="store_true", help="Two epochs, two train batches and one eval batch, batch size capped at 8; isolated output.")
     parser.add_argument("--allow-cpu", action="store_true", help="Allow CPU only for the correctness smoke run; requires --smoke. Real experiments require a hosted GPU or TPU.")
@@ -121,8 +123,23 @@ def optimizer_step(optimizer, device):
         optimizer.step()
 
 
-def train_epoch(model, loader, optimizer, device, batch_limit=None):
-    """Run a sample-weighted MSE training epoch.
+def censored_mse(prediction, target, censored):
+    """Return CensoredMSE, a left-censored squared error averaged over pairs.
+
+    Args:
+        prediction: Final predicted scores, including any baseline offsets.
+        target: Stored scores, used as upper bounds for censored pairs.
+        censored: Float32 flags, 1 for left-censored and 0 for observed pairs.
+
+    Returns:
+        Scalar mean squared error with zero penalty below censored bounds.
+    """
+    error = target - prediction
+    return torch.where(censored.bool(), error.clamp(max=0), error).square().mean()
+
+
+def train_epoch(model, loader, optimizer, device, batch_limit=None, censored_loss=False):
+    """Run a training epoch with optional CensoredMSE objective.
 
     Args:
         model: Regression model, updated in place.
@@ -130,22 +147,27 @@ def train_epoch(model, loader, optimizer, device, batch_limit=None):
         optimizer: Optimiser whose state is updated.
         device: Torch device receiving batches.
         batch_limit: Optional smoke cap on training batches.
+        censored_loss: Apply CensoredMSE instead of plain MSE to the gradient.
 
     Returns:
-        MSE across the examples actually trained on this epoch.
+        Plain MSE across the examples actually trained on this epoch.
     """
     model.train()
     squared_error = 0.0
     count = 0
-    for drug, protein, scores, offsets in islice(loader, batch_limit):
+    for drug, protein, scores, offsets, censored in islice(loader, batch_limit):
         drug, protein, scores = drug.to(device), protein.to(device), scores.to(device)
         optimizer.zero_grad(set_to_none=True)
         # The offset is 0 unless --kmer-residual supplied one, so this is the plain model then.
         prediction = model(drug, protein) + offsets.to(device)
-        loss = torch.nn.functional.mse_loss(prediction, scores)
+        loss = (censored_mse(prediction, scores, censored.to(device)) if censored_loss
+                else torch.nn.functional.mse_loss(prediction, scores))
         loss.backward()
         optimizer_step(optimizer, device)
-        squared_error += loss.item() * len(scores)
+        # Keep reported train_mse as plain MSE so epochs remain comparable across objectives.
+        reported_mse = (torch.nn.functional.mse_loss(prediction.detach(), scores).item()
+                        if censored_loss else loss.item())
+        squared_error += reported_mse * len(scores)
         count += len(scores)
     return squared_error / count
 
@@ -165,7 +187,7 @@ def predict(model, loader, device, batch_limit=None):
     """
     model.eval()
     actual, predicted = [], []
-    for drug, protein, scores, offsets in islice(loader, batch_limit):
+    for drug, protein, scores, offsets, _ in islice(loader, batch_limit):
         predicted.append((model(drug.to(device), protein.to(device)).cpu() + offsets).numpy())
         actual.append(scores.numpy())
     y, prediction = np.concatenate(actual), np.concatenate(predicted)
@@ -235,7 +257,7 @@ def main():
                     batch_size=min(args.batch_size, 8) if args.smoke else args.batch_size,
                     patience=args.patience, smoke=args.smoke,
                     protein_encoder=args.protein_encoder, esm_proj_dim=args.esm_proj_dim,
-                    kmer_residual=args.kmer_residual)
+                    kmer_residual=args.kmer_residual, censored_loss=args.censored_loss)
     device = resolve_device() or torch.device("cpu")
     if device.type == "cpu":
         torch.set_num_threads(min(4, torch.get_num_threads()))
@@ -254,15 +276,18 @@ def main():
     directory = output_path(config)
     directory.mkdir(parents=True, exist_ok=True)
     config_path = directory / "config.json"
+    run_config = asdict(config)
+    if not config.censored_loss:
+        run_config.pop("censored_loss")
     if config_path.exists():
         if not args.resume:
             raise SystemExit(f"Run exists at {directory}. Use --resume to continue it.")
         saved = json.loads(config_path.read_text(encoding="utf-8"))
-        current = json.loads(json.dumps(asdict(config)))
+        current = json.loads(json.dumps(run_config))
         if any(saved[key] != value for key, value in current.items() if key != "max_epochs"):
             raise SystemExit("Resume configuration differs from config.json (only max_epochs may change).")
     loaders, vocab = load_data(config)
-    config_path.write_text(json.dumps({**asdict(config), "token_lengths": vocab["max_len"][config.dataset],
+    config_path.write_text(json.dumps({**run_config, "token_lengths": vocab["max_len"][config.dataset],
                                       "vocab_sizes": {key: len(vocab[key]) + 1 for key in ("smiles", "protein")}}, indent=2) + "\n", encoding="utf-8")
     model = DeepDTA(len(vocab["smiles"]) + 1, len(vocab["protein"]) + 1, config).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
@@ -300,7 +325,8 @@ def main():
     while epoch < config.max_epochs and patience_count < config.patience:
         started = time.perf_counter()
         epoch += 1
-        train_mse = train_epoch(model, loaders["train"], optimizer, device, train_limit)
+        train_mse = train_epoch(model, loaders["train"], optimizer, device, train_limit,
+                                config.censored_loss)
         y, prediction, _ = predict(model, loaders["val"], device, eval_limit)
         val_mse = mse(y, prediction)
         if not math.isfinite(val_mse):
