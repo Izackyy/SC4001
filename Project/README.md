@@ -1138,6 +1138,49 @@ from Hugging Face; every other kernel runs with internet off. The dataset
 `isaacwjk21/sc4001-project` now carries the three `*_esm.npz` files, so later kernels attach
 them instead of spending roughly five GPU minutes recomputing bytes that already exist.
 
+### Scoring the residual directly: an endpoint that looks sound and is not
+
+With `--kmer-residual` the prediction is `offset + network`, so it is tempting to measure the
+network on its own by the within-drug concordance between its output and the **residual truth**
+`score - offset`, and to call 0.5 the chance level. That endpoint is unusable, and the reason is
+worth keeping because the mistake is attractive rather than careless.
+
+Set the network output to exactly minus the offset. The full prediction is then constant, so its
+within-ligand CI is **0.5000** and it orders nothing at all. Yet its residual-ordering CI is
+**0.7644** across all 66 matched DAVIS drugs, above 0.5 for every one of them, and still
+**0.6576** when censored pairs are dropped. A predictor carrying no protein information scores
+0.76.
+
+Two causes, both structural:
+
+* The offset is a similarity-weighted average of the drug's own training scores, so it cannot
+  leave that drug's observed range and it shrinks extremes. The residual is therefore
+  anti-correlated with the offset by construction, and anything tracking `-offset` scores well.
+* Censoring dominates the comparison set. 53.2% of within-drug test pairs on DAVIS cold-target
+  are floor-floor, both scores at the pKd floor of 5.0. Their residual difference is exactly
+  minus their offset difference, which invents an ordering where the assay reported a tie. The
+  measured-score CI in `src/metrics.py` correctly drops those pairs as ties; the residual target
+  silently reinstates them.
+
+**Use instead** the paired per-drug delta on the full prediction against the offset alone,
+`CI_d(y, offset + network) - CI_d(y, offset)`, averaged over the same matched drug set, with the
+floor-versus-above-floor subset reported separately and the `network = -offset` control reported
+beside it. The control is cheap and it is what makes the headline number interpretable.
+
+## Version control
+
+The project is tracked from the repository root, one level above this directory.
+
+* `.gitattributes` pins `*.sh` to LF. A `#SBATCH` line carrying a stray CR makes a Slurm submit
+  fail, and `core.autocrlf` would otherwise rewrite the job scripts on checkout.
+* `outputs/**/*.pt` stays untracked: checkpoints are about 3.2 GB.
+* `outputs/kaggle_logs/*/sc4001/` stays untracked. Kaggle echoes the whole staged dataset back
+  inside each pulled output, so those directories are a third copy of files already tracked at
+  their real paths; ignoring them takes the tracked tree from 66 MB to 10 MB. The logs, configs,
+  histories and metrics beside them *are* tracked.
+* `.env` is ignored and holds the cluster and Kaggle credentials. Nothing in it is ever printed,
+  committed or passed on a command line.
+
 ## Cluster job scripts
 
 `jobs/` holds scheduler scripts for the NTU clusters, named after the run they submit, as
