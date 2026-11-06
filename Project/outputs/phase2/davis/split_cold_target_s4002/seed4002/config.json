@@ -1,0 +1,33 @@
+{
+  "dataset": "davis",
+  "split": "split_cold_target_s4002",
+  "seed": 4002,
+  "embedding_dim": 128,
+  "filters": [
+    32,
+    64,
+    96
+  ],
+  "drug_kernel": 4,
+  "protein_kernel": 8,
+  "fc_dims": [
+    1024,
+    1024,
+    512
+  ],
+  "dropout": 0.1,
+  "learning_rate": 0.001,
+  "batch_size": 256,
+  "max_epochs": 100,
+  "patience": 15,
+  "min_delta": 0.0001,
+  "smoke": false,
+  "token_lengths": {
+    "smiles": 85,
+    "protein": 1200
+  },
+  "vocab_sizes": {
+    "smiles": 30,
+    "protein": 22
+  }
+}

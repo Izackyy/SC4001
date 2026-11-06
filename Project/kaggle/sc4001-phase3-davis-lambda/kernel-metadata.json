@@ -1,0 +1,17 @@
+{
+  "id": "isaacwjk21/sc4001-phase3-davis-lambda",
+  "title": "sc4001-phase3-davis-lambda",
+  "code_file": "sc4001-phase3-davis-lambda.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "false",
+  "dataset_sources": [
+    "isaacwjk21/sc4001-project"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

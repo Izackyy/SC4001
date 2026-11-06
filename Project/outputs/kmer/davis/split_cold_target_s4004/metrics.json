@@ -1,0 +1,59 @@
+{
+  "method": "kmer-knn",
+  "dataset": "davis",
+  "split": "split_cold_target_s4004",
+  "neighbours": 10,
+  "sharpening": 4,
+  "val_mse": 0.3088500298443718,
+  "leakage_check": {
+    "kmer": 3,
+    "max_test_train_similarity": 0.7617624402046204,
+    "test_targets_above_limit": 0,
+    "limit": 0.95,
+    "n_test_targets": 63,
+    "n_train_targets": 296
+  },
+  "coverage": {
+    "test_pairs": 4284,
+    "pairs_with_trained_drug": 4284,
+    "pairs_on_global_mean": 0,
+    "test_ligands": 68,
+    "matched_ligands": 67
+  },
+  "test": {
+    "all": {
+      "n": 4284,
+      "mse": 0.5769077353030745,
+      "ci": 0.7808814334033509
+    },
+    "uncensored": {
+      "n": 1529,
+      "mse": 1.4281262014005542,
+      "ci": 0.6230861590230404
+    }
+  },
+  "training_mean_baseline": {
+    "test": {
+      "all": {
+        "n": 4284,
+        "mean": 5.443654752422327,
+        "mse": 0.8343643436785618,
+        "ci": 0.5
+      },
+      "uncensored": {
+        "n": 1529,
+        "mean": 5.443654752422327,
+        "mse": 1.9830944849039933,
+        "ci": 0.5
+      }
+    }
+  },
+  "within_ligand": {
+    "ci": 0.6515269322534474,
+    "n_ligands_ranked": 67,
+    "predicted_spread": 0.34115107530882327,
+    "measured_spread": 0.6996832889898879,
+    "dispersion_ratio": 0.48757928147938623,
+    "basis": "matched ligand set: >=2 measured test pairs and non-zero measured spread"
+  }
+}

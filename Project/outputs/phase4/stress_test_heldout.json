@@ -1,0 +1,181 @@
+{
+  "n_triples": 2992,
+  "invisible_mutants": [
+    "LRRK2(G2019S)",
+    "MET(M1250T)",
+    "MET(Y1235D)"
+  ],
+  "runs": {
+    "outputs/phase2/davis/split_mutant/seed4001": {
+      "split": "split_mutant",
+      "seed": 4001,
+      "held_out": true,
+      "partitions": {
+        "test": 2992
+      },
+      "strata": {
+        "visible_uncensored": {
+          "n": 1127,
+          "measured_sd": 0.7228906640653529,
+          "predicted_sd": 0.17474448432229522,
+          "mae": 0.4811429382590965,
+          "rmse": 0.7216994635956983,
+          "mean_measured": -0.15816337069050648,
+          "mean_predicted": -0.057923146868132866,
+          "n_informative": 362,
+          "sd_ratio": 0.24173017166880642,
+          "pearson": 0.1656527375821254,
+          "spearman": 0.09737887534415769,
+          "slope_measured_on_predicted": 0.6852795265006699,
+          "sign_agreement": 0.49171270718232046
+        },
+        "visible_all": {
+          "n": 2788,
+          "measured_sd": 0.5429680413442526,
+          "predicted_sd": 0.12365417486292148,
+          "mae": 0.24784481035742295,
+          "rmse": 0.5295200305230279,
+          "mean_measured": -0.08146391710768518,
+          "mean_predicted": -0.031180061089941213,
+          "n_informative": 455,
+          "sd_ratio": 0.22773748259065998,
+          "pearson": 0.2393642071221088,
+          "spearman": 0.06740976378094855,
+          "slope_measured_on_predicted": 1.0510531880794824,
+          "sign_agreement": 0.4945054945054945
+        },
+        "invisible_control": {
+          "n": 204,
+          "measured_sd": 0.30485759182461813,
+          "predicted_sd": 0.0,
+          "mae": 0.1522185353663972,
+          "rmse": 0.3041237945492217,
+          "mean_measured": 0.0029513201990295957,
+          "mean_predicted": 0.0,
+          "n_informative": 23,
+          "sd_ratio": 0.0,
+          "pearson": null,
+          "spearman": null,
+          "slope_measured_on_predicted": null,
+          "predicted_is_constant": true,
+          "sign_agreement": 0.0
+        }
+      },
+      "control_max_abs_predicted_shift": 0.0
+    },
+    "outputs/phase2/davis/split_mutant/seed4002": {
+      "split": "split_mutant",
+      "seed": 4002,
+      "held_out": true,
+      "partitions": {
+        "test": 2992
+      },
+      "strata": {
+        "visible_uncensored": {
+          "n": 1127,
+          "measured_sd": 0.7228906640653529,
+          "predicted_sd": 0.06952670559811808,
+          "mae": 0.49163685524806566,
+          "rmse": 0.7385519801841485,
+          "mean_measured": -0.15816337069050648,
+          "mean_predicted": -0.012334338309178865,
+          "n_informative": 362,
+          "sd_ratio": 0.09617872944591317,
+          "pearson": 0.027322000641580944,
+          "spearman": 0.03339747384268843,
+          "slope_measured_on_predicted": 0.2840752918964858,
+          "sign_agreement": 0.3314917127071823
+        },
+        "visible_all": {
+          "n": 2788,
+          "measured_sd": 0.5429680413442526,
+          "predicted_sd": 0.0471535035794997,
+          "mae": 0.2521395662232444,
+          "rmse": 0.5461663278201802,
+          "mean_measured": -0.08146391710768518,
+          "mean_predicted": -0.00745405647983852,
+          "n_informative": 455,
+          "sd_ratio": 0.08684397605199647,
+          "pearson": 0.08031299097050368,
+          "spearman": 0.0381965002336087,
+          "slope_measured_on_predicted": 0.9247963373120749,
+          "sign_agreement": 0.3384615384615385
+        },
+        "invisible_control": {
+          "n": 204,
+          "measured_sd": 0.30485759182461813,
+          "predicted_sd": 0.0,
+          "mae": 0.1522185353663972,
+          "rmse": 0.3041237945492217,
+          "mean_measured": 0.0029513201990295957,
+          "mean_predicted": 0.0,
+          "n_informative": 23,
+          "sd_ratio": 0.0,
+          "pearson": null,
+          "spearman": null,
+          "slope_measured_on_predicted": null,
+          "predicted_is_constant": true,
+          "sign_agreement": 0.0
+        }
+      },
+      "control_max_abs_predicted_shift": 0.0
+    },
+    "outputs/phase2/davis/split_mutant/seed4003": {
+      "split": "split_mutant",
+      "seed": 4003,
+      "held_out": true,
+      "partitions": {
+        "test": 2992
+      },
+      "strata": {
+        "visible_uncensored": {
+          "n": 1127,
+          "measured_sd": 0.7228906640653529,
+          "predicted_sd": 0.09491963407407973,
+          "mae": 0.4817000104982108,
+          "rmse": 0.7187831115923594,
+          "mean_measured": -0.15816337069050648,
+          "mean_predicted": -0.028278245900517137,
+          "n_informative": 362,
+          "sd_ratio": 0.13130565767757452,
+          "pearson": 0.22850022858334548,
+          "spearman": 0.08343825513017741,
+          "slope_measured_on_predicted": 1.7402161690887366,
+          "sign_agreement": 0.4613259668508287
+        },
+        "visible_all": {
+          "n": 2788,
+          "measured_sd": 0.5429680413442526,
+          "predicted_sd": 0.06389519336313582,
+          "mae": 0.24759682080550824,
+          "rmse": 0.5367751812318299,
+          "mean_measured": -0.08146391710768518,
+          "mean_predicted": -0.011953880318268129,
+          "n_informative": 455,
+          "sd_ratio": 0.11767763201117207,
+          "pearson": 0.22337747062109245,
+          "spearman": 0.05335885425553578,
+          "slope_measured_on_predicted": 1.898215207116723,
+          "sign_agreement": 0.44835164835164837
+        },
+        "invisible_control": {
+          "n": 204,
+          "measured_sd": 0.30485759182461813,
+          "predicted_sd": 0.0,
+          "mae": 0.1522185353663972,
+          "rmse": 0.3041237945492217,
+          "mean_measured": 0.0029513201990295957,
+          "mean_predicted": 0.0,
+          "n_informative": 23,
+          "sd_ratio": 0.0,
+          "pearson": null,
+          "spearman": null,
+          "slope_measured_on_predicted": null,
+          "predicted_is_constant": true,
+          "sign_agreement": 0.0
+        }
+      },
+      "control_max_abs_predicted_shift": 0.0
+    }
+  }
+}

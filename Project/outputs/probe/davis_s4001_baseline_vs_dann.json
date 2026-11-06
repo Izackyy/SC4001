@@ -1,0 +1,35 @@
+{
+  "dataset": "davis",
+  "split": "split_cold_target",
+  "checkpoint": "best",
+  "rows": {
+    "input 3-mer composition (PCA-96)": {
+      "train_vs_target_pool": 0.6157707677014022,
+      "train_vs_val": 0.6271800129006471,
+      "train_vs_external": 0.6697343474116659,
+      "train_vs_test": 0.5707643249240053,
+      "null_random_halves": 0.44714983483348797
+    },
+    "random-init CNN encoder": {
+      "train_vs_target_pool": 0.5320543474723254,
+      "train_vs_val": 0.5489866320850355,
+      "train_vs_external": 0.5479396215575303,
+      "train_vs_test": 0.48664519625854374,
+      "null_random_halves": 0.5186824848060109
+    },
+    "outputs/nostop/baseline/phase2/davis/split_cold_target/seed4001 [best, best epoch 80]": {
+      "train_vs_target_pool": 0.8646718890899227,
+      "train_vs_val": 0.863818492457568,
+      "train_vs_external": 0.8955135342276648,
+      "train_vs_test": 0.8913335143889638,
+      "null_random_halves": 0.5164972514513713
+    },
+    "outputs/lambda-nostop/lambda0.03/phase3/davis/split_cold_target/seed4001 [best, best epoch 86]": {
+      "train_vs_target_pool": 0.5071160290580451,
+      "train_vs_val": 0.5697584620225963,
+      "train_vs_external": 0.5433118410294439,
+      "train_vs_test": 0.8324569626605474,
+      "null_random_halves": 0.5052278732145072
+    }
+  }
+}

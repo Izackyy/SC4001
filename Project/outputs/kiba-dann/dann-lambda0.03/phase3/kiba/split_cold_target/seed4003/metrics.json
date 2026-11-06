@@ -1,0 +1,44 @@
+{
+  "dataset": "kiba",
+  "split": "split_cold_target",
+  "seed": 4003,
+  "smoke": false,
+  "best_epoch": 14,
+  "stopped_epoch": 80,
+  "lambda_max": 0.03,
+  "discriminator_input": "protein",
+  "device": "cuda",
+  "training_mean_baseline": {
+    "val": {
+      "all": {
+        "n": 17906,
+        "mean": 11.71024681844895,
+        "mse": 0.8072594587866522,
+        "ci": 0.5
+      }
+    },
+    "test": {
+      "all": {
+        "n": 17609,
+        "mean": 11.71024681844895,
+        "mse": 0.7438064361741439,
+        "ci": 0.5
+      }
+    }
+  },
+  "val": {
+    "all": {
+      "n": 17906,
+      "mse": 0.5075071283077887,
+      "ci": 0.6907214870163156
+    }
+  },
+  "test": {
+    "all": {
+      "n": 17609,
+      "mse": 0.41595825438250733,
+      "ci": 0.7612243337515143
+    }
+  },
+  "total_seconds": 3358.56017194199
+}

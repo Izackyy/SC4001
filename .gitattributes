@@ -1,0 +1,10 @@
+# Cluster job scripts must stay LF: Slurm fails on a #SBATCH line with a stray CR.
+*.sh text eol=lf
+
+# Binary feature archives and compressed tables must never be line-ending converted.
+*.npz binary
+*.gz binary
+*.pt binary
+*.pdf binary
+*.zip binary
+*.png binary
