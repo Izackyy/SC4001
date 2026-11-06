@@ -1,0 +1,184 @@
+{
+  "n_triples": 2992,
+  "invisible_mutants": [
+    "LRRK2(G2019S)",
+    "MET(M1250T)",
+    "MET(Y1235D)"
+  ],
+  "runs": {
+    "outputs/phase2/davis/split_cold_target/seed4001": {
+      "split": "split_cold_target",
+      "seed": 4001,
+      "held_out": false,
+      "partitions": {
+        "train": 2244,
+        "val": 748
+      },
+      "strata": {
+        "visible_uncensored": {
+          "n": 1127,
+          "measured_sd": 0.7228906640653529,
+          "predicted_sd": 0.38087143135733625,
+          "mae": 0.38284535413372667,
+          "rmse": 0.5523631720925471,
+          "mean_measured": -0.15816337069050648,
+          "mean_predicted": -0.10166509699377214,
+          "n_informative": 362,
+          "sd_ratio": 0.5268728042708595,
+          "pearson": 0.663667113709911,
+          "spearman": 0.46420269719134755,
+          "slope_measured_on_predicted": 1.2596344095390577,
+          "sign_agreement": 0.7651933701657458
+        },
+        "visible_all": {
+          "n": 2788,
+          "measured_sd": 0.5429680413442526,
+          "predicted_sd": 0.27281173523764524,
+          "mae": 0.20763462225690582,
+          "rmse": 0.41521862345456145,
+          "mean_measured": -0.08146391710768518,
+          "mean_predicted": -0.04439350453818717,
+          "n_informative": 455,
+          "sd_ratio": 0.5024452904488298,
+          "pearson": 0.6688364371701142,
+          "spearman": 0.3007716118588507,
+          "slope_measured_on_predicted": 1.331162715392653,
+          "sign_agreement": 0.7626373626373626
+        },
+        "invisible_control": {
+          "n": 204,
+          "measured_sd": 0.30485759182461813,
+          "predicted_sd": 0.0,
+          "mae": 0.1522185353663972,
+          "rmse": 0.3041237945492217,
+          "mean_measured": 0.0029513201990295957,
+          "mean_predicted": 0.0,
+          "n_informative": 23,
+          "sd_ratio": 0.0,
+          "pearson": null,
+          "spearman": null,
+          "slope_measured_on_predicted": null,
+          "predicted_is_constant": true,
+          "sign_agreement": 0.0
+        }
+      },
+      "control_max_abs_predicted_shift": 0.0
+    },
+    "outputs/phase2/davis/split_cold_target/seed4002": {
+      "split": "split_cold_target",
+      "seed": 4002,
+      "held_out": false,
+      "partitions": {
+        "train": 2244,
+        "val": 748
+      },
+      "strata": {
+        "visible_uncensored": {
+          "n": 1127,
+          "measured_sd": 0.7228906640653529,
+          "predicted_sd": 0.48149613930315216,
+          "mae": 0.3645227031793607,
+          "rmse": 0.5100191279378783,
+          "mean_measured": -0.15816337069050648,
+          "mean_predicted": -0.20832256945023625,
+          "n_informative": 362,
+          "sd_ratio": 0.6660704906539263,
+          "pearson": 0.7133312791164831,
+          "spearman": 0.47795266845045953,
+          "slope_measured_on_predicted": 1.0709546348707892,
+          "sign_agreement": 0.7569060773480663
+        },
+        "visible_all": {
+          "n": 2788,
+          "measured_sd": 0.5429680413442526,
+          "predicted_sd": 0.35977446663139606,
+          "mae": 0.19689633755974548,
+          "rmse": 0.3751667840258164,
+          "mean_measured": -0.08146391710768518,
+          "mean_predicted": -0.10479697520968904,
+          "n_informative": 455,
+          "sd_ratio": 0.6626070767271768,
+          "pearson": 0.7269048637298043,
+          "spearman": 0.31639027925236435,
+          "slope_measured_on_predicted": 1.0970375796772565,
+          "sign_agreement": 0.7384615384615385
+        },
+        "invisible_control": {
+          "n": 204,
+          "measured_sd": 0.30485759182461813,
+          "predicted_sd": 0.0,
+          "mae": 0.1522185353663972,
+          "rmse": 0.3041237945492217,
+          "mean_measured": 0.0029513201990295957,
+          "mean_predicted": 0.0,
+          "n_informative": 23,
+          "sd_ratio": 0.0,
+          "pearson": null,
+          "spearman": null,
+          "slope_measured_on_predicted": null,
+          "predicted_is_constant": true,
+          "sign_agreement": 0.0
+        }
+      },
+      "control_max_abs_predicted_shift": 0.0
+    },
+    "outputs/phase2/davis/split_cold_target/seed4003": {
+      "split": "split_cold_target",
+      "seed": 4003,
+      "held_out": false,
+      "partitions": {
+        "train": 2244,
+        "val": 748
+      },
+      "strata": {
+        "visible_uncensored": {
+          "n": 1127,
+          "measured_sd": 0.7228906640653529,
+          "predicted_sd": 0.6286466723116062,
+          "mae": 0.29272808945111384,
+          "rmse": 0.4337383035714468,
+          "mean_measured": -0.15816337069050648,
+          "mean_predicted": -0.16743899872584372,
+          "n_informative": 362,
+          "sd_ratio": 0.8696289820320234,
+          "pearson": 0.8026947006306776,
+          "spearman": 0.5999619336651225,
+          "slope_measured_on_predicted": 0.9230312204580132,
+          "sign_agreement": 0.8314917127071824
+        },
+        "visible_all": {
+          "n": 2788,
+          "measured_sd": 0.5429680413442526,
+          "predicted_sd": 0.45098738639668434,
+          "mae": 0.15518873893534846,
+          "rmse": 0.31880779028342604,
+          "mean_measured": -0.08146391710768518,
+          "mean_predicted": -0.0777100360547453,
+          "n_informative": 455,
+          "sd_ratio": 0.8305965582802125,
+          "pearson": 0.8096955999385039,
+          "spearman": 0.42292028553573063,
+          "slope_measured_on_predicted": 0.9748362088268395,
+          "sign_agreement": 0.8219780219780219
+        },
+        "invisible_control": {
+          "n": 204,
+          "measured_sd": 0.30485759182461813,
+          "predicted_sd": 0.0,
+          "mae": 0.1522185353663972,
+          "rmse": 0.3041237945492217,
+          "mean_measured": 0.0029513201990295957,
+          "mean_predicted": 0.0,
+          "n_informative": 23,
+          "sd_ratio": 0.0,
+          "pearson": null,
+          "spearman": null,
+          "slope_measured_on_predicted": null,
+          "predicted_is_constant": true,
+          "sign_agreement": 0.0
+        }
+      },
+      "control_max_abs_predicted_shift": 0.0
+    }
+  }
+}

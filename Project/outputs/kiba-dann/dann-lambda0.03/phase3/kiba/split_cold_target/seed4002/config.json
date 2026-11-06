@@ -1,0 +1,36 @@
+{
+  "dataset": "kiba",
+  "split": "split_cold_target",
+  "seed": 4002,
+  "embedding_dim": 128,
+  "filters": [
+    32,
+    64,
+    96
+  ],
+  "drug_kernel": 4,
+  "protein_kernel": 8,
+  "fc_dims": [
+    1024,
+    1024,
+    512
+  ],
+  "dropout": 0.1,
+  "learning_rate": 0.001,
+  "batch_size": 256,
+  "max_epochs": 80,
+  "patience": 80,
+  "min_delta": 0.0001,
+  "smoke": false,
+  "lambda_max": 0.03,
+  "discriminator_input": "protein",
+  "discriminator_hidden": 64,
+  "token_lengths": {
+    "smiles": 100,
+    "protein": 1000
+  },
+  "vocab_sizes": {
+    "smiles": 30,
+    "protein": 22
+  }
+}
