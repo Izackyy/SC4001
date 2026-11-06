@@ -1,20 +1,24 @@
-"""Degenerate predictors that beat standard drug-target affinity endpoints.
+"""Protein-blind predictors scored against standard drug-target affinity endpoints.
 
-Three endpoints in common use for this task can be won by a predictor that carries no information
-about which unseen protein binds which drug. Each control below is constructed to have that
-property by design, so whatever it scores is the floor an arm must clear before its score means
-anything. All figures are on the DAVIS cold-target test partition, s4001.
+Two endpoints in common use for this task can be beaten, or brought to within a rounding error of
+a trained model, by a predictor carrying no information about which unseen protein binds which
+drug. A third resists. Each control below is protein-blind by construction, so whatever it scores
+is the floor an arm must clear before its score means anything. All figures are on the DAVIS
+cold-target test partition, s4001.
 
   1. Pooled concordance index. A predictor that is CONSTANT WITHIN EACH DRUG cannot order targets
-     at all, yet pooled CI reads 0.7633, against the trained CNN's 0.7885, because most test
-     pairs compare different drugs and so are ordered by drug level alone.
-  2. Uncensored MSE, the view that excludes the pKd 5.0 assay floor. The same per-drug constant,
-     set to each drug's mean over its uncensored TRAINING pairs, beats the trained CNN.
+     at all, yet pooled CI reads 0.7633 against the trained CNN's 0.7885. It does not beat the
+     CNN; it comes within 0.0252, because most test pairs compare different drugs and so are
+     ordered by drug level alone. That margin is too small to carry a claim about proteins.
+  2. Uncensored MSE, the view that excludes the pKd 5.0 assay floor. Here the per-drug constant,
+     set to each drug's mean over its uncensored TRAINING pairs, beats the trained CNN outright,
+     0.8113 against 1.1237. It does not beat the k-mer baseline's 0.6875.
   3. Within-ligand CI. This one is sound: every per-drug-constant control scores exactly 0.5,
      which is why the project reports it as the primary ordering metric.
 
-The conclusion is not that these arms are good. It is that an endpoint a degenerate predictor can
-win cannot be used to argue that a model has learned anything about unseen proteins.
+The conclusion is not that these arms are good. It is that an endpoint a protein-blind predictor
+can win, or very nearly match, cannot be used to argue that a model has learned anything about
+unseen proteins.
 
 Usage:
     uv run python -m analysis.endpoint_controls

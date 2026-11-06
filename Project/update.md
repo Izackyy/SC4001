@@ -618,7 +618,7 @@ fixed; a bootstrap gives ESM minus k-mer **+0.0127, 95% [-0.0706, +0.1070]**, wh
 zero; and **validation reverses the sign**, at -0.0819. Section 3's conclusion stands unchanged
 and no routing method is proposed. Recorded as mistakes entry 38.
 
-### 13.2 Three standard endpoints that a degenerate predictor wins
+### 13.2 Two endpoints a protein-blind predictor beats or nearly matches, and one that resists
 
 A predictor that is **constant within each drug** carries no information about which unseen
 protein binds which drug, by construction. Measured on the DAVIS cold-target test partition:
@@ -640,10 +640,16 @@ protein binds which drug, by construction. Measured on the DAVIS cold-target tes
 * **Within-ligand CI is sound.** Every control scores exactly **0.5000**, which is why it is this
   project's primary ordering endpoint.
 
+Note the exact strength of each claim. The control **beats** the CNN on uncensored MSE outright;
+it does **not** beat it on pooled CI, it comes within 0.0252 of it, which is damning for a
+headline metric but is not a win; and within-ligand CI it cannot touch at all. Only the third
+behaves the way an endpoint for this question must.
+
 This is the third endpoint failure found in the project, after the residual-ordering endpoint of
 section 12.1 and the spread-ratio and uncensored-MSE endpoints proposed for a censoring-aware
-loss. The pattern is consistent: on a drug-by-target grid with a censored floor, any endpoint
-that does not hold the drug fixed can be won without learning anything about proteins.
+loss. The pattern is consistent: on a drug-by-target grid with a censored floor, an endpoint that
+does not hold the drug fixed can be won, or brought to within a rounding error of a trained
+model, without learning anything about proteins.
 
 ### 13.3 Phase 8, pre-registered before the runs
 
