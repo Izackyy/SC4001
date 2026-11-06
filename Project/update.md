@@ -508,9 +508,15 @@ Three readings, in order of how well they are supported:
    ESM space, the quantity the swapped-space test measured. Whether the *trained* ESM arm was
    limited by the same anisotropy is untested, and a learned linear layer could absorb centring
    on its own, so it probably was not.
-2. **The estimator was not the handicap.** Per-query rank weighting was the other candidate
-   explanation and it hurts everywhere, taking 3-mer from 0.7956 to 0.7672. The kNN weighting
-   rule is fine.
+2. **The weighting rule is part of the raw-cosine deficit, but it is not where the fix lives.**
+   Per-query rank weighting was the other candidate explanation and it is not a clean negative.
+   It *raises* raw ESM ordering from 0.7266 to 0.7473, about 30% of that arm's gap, which is
+   exactly what the adversarial review suspected: a similarity range compressed near 1.0 cannot
+   be sharpened usefully, so its ordering reads better through ranks than through magnitudes. But
+   it *hurts* 3-mer, whose similarities are already high-contrast, taking it from 0.7956 to
+   0.7672, and it degrades MSE on both arms (ESM 0.4992 to 0.5732). Centring, with no
+   hyperparameters at all, reaches 0.7838 and so beats rank weighting outright. The rule
+   therefore contributes to how bad raw ESM cosine looks, while the repair belongs to the space.
 3. **Supervision helps 3-mer and does nothing for ESM.** 8 of 42 cells beat the reference for
    3-mer, 0 of 42 for ESM. ESM needed an unsupervised variance fix; 3-mer needed supervision.
    With 296 targets and 1280 dimensions a supervised map on ESM simply overfits.
