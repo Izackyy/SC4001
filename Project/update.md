@@ -141,6 +141,14 @@ Matched ligand set throughout: 66 of 68 DAVIS and 1436 of 2025 KIBA test drugs, 
 0.6391 and 0.5762. No drug has a predicted spread of zero in any ESM run, so no run is in the
 degenerate per-drug-constant mode.
 
+**Provenance of the CNN baseline figure.** The DAVIS CNN within-ligand CI quoted here and
+elsewhere as 0.6789 is the **no-early-stop** run, `outputs/nostop/baseline/phase2/davis/
+split_cold_target`, scored from `best.pt` over seeds 4001-4003. The early-stopped run under
+`outputs/phase2/davis/split_cold_target` is a different number, 0.6818, and `last.pt` gives
+0.6901 and 0.6906 respectively. The k-mer (0.7494), frozen ESM (0.6867) and hybrid (0.7460)
+figures reproduce from `outputs/` without this ambiguity. Any recomputation must name the run and
+the checkpoint, and metrics will not match if it picks the other CNN directory.
+
 The ESM branch **widens** its predictions substantially -- the KIBA dispersion ratio moves 0.514
 to 0.684 -- but its within-ligand concordance moves only +0.0078 (DAVIS) and +0.0084 (KIBA),
 which is inside seed noise (DAVIS per-seed 0.6778 / 0.6692 / 0.7132). Wider predictions that are
@@ -543,3 +551,121 @@ pre-registered: floor-versus-above-floor ordering improved by +0.0196 with 42 dr
 worse, and the prediction spread ratio rose from 0.771 to 0.850. Both were bought at a real cost
 in uncensored MSE, so "it separates binders from non-binders better" is a hypothesis for another
 partition, not a result here.
+
+## 13. Where the cold-target deficit lives, and which endpoints cannot see it
+
+Nothing here spent GPU. Both results are computed from checkpoints already on disk and both
+replicate on validation and test. `analysis/homology_bands.py` and `analysis/endpoint_controls.py`
+reproduce every number below.
+
+### 13.1 The deficit is not uniform: it is a homology gradient
+
+Each cold-target test protein is placed in a quartile of its **maximum amino-acid 3-mer cosine to
+any training protein**, and every trained arm is re-scored inside each band. Metrics are computed
+per seed and then averaged, and the k-mer tuning grid is imported from `src/kmer_baseline.py`;
+doing either the other way round produces wrong numbers, which is logged as mistakes entry 37.
+The check that the table can be trusted is that the pooled column reproduces the published
+figures exactly: k-mer 0.7494, frozen ESM 0.6867, hybrid 0.7460.
+
+**Test**, within-ligand CI:
+
+| band | max cosine to train | proteins | censored | k-mer | CNN | ESM | hybrid |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 | 0.1761-0.2454 | 16 | 0.767 | 0.5650 | **0.5069** | 0.5786 | 0.5507 |
+| 1 | 0.2491-0.3261 | 16 | 0.681 | 0.6109 | 0.5679 | 0.6477 | 0.6224 |
+| 2 | 0.3365-0.4420 | 15 | 0.655 | **0.8242** | 0.7746 | 0.7409 | 0.8125 |
+| 3 | 0.4427-0.6955 | 16 | 0.703 | **0.8736** | 0.8074 | 0.8023 | 0.8478 |
+| pooled | - | 63 | 0.702 | 0.7494 | 0.6818 | 0.6867 | 0.7460 |
+
+**Validation**, same construction, its own quartiles:
+
+| band | max cosine to train | k-mer | CNN | ESM | hybrid |
+| --- | --- | --- | --- | --- | --- |
+| 0 | 0.1540-0.3057 | 0.7540 | 0.6701 | 0.6731 | 0.7540 |
+| 1 | 0.3104-0.3574 | 0.7112 | 0.6712 | 0.6999 | 0.7064 |
+| 2 | 0.3577-0.4931 | 0.7803 | 0.7380 | 0.7319 | 0.7785 |
+| 3 | 0.5050-0.8298 | 0.8491 | 0.7672 | 0.7678 | 0.8229 |
+| pooled | - | 0.7956 | 0.7287 | 0.7404 | 0.7937 |
+
+Two readings, both supported.
+
+1. **A single cold-target figure averages two different regimes.** The k-mer baseline runs from
+   **0.5650 to 0.8736** across test bands. Its headline 0.7494 therefore describes no actual
+   case: it is a blend of near-chance performance on distant proteins and near-0.87 on close
+   ones. Reporting one cold-target number hides the variable the task actually depends on. The
+   censoring rate is flat across bands (0.655 to 0.767), so this is not an artefact of the pKd
+   5.0 floor.
+2. **In the hardest band the trained network cannot order unseen proteins at all.** Bootstrapping
+   over band 0's 16 proteins, 2000 draws:
+
+   | arm | band-0 within-ligand CI | 95% interval | clears chance |
+   | --- | --- | --- | --- |
+   | CNN | 0.5079 | [0.4620, 0.5510] | **no** |
+   | hybrid | 0.5543 | [0.4896, 0.6200] | **no** |
+   | k-mer | 0.5660 | [0.5008, 0.6357] | yes, marginally |
+   | frozen ESM | 0.5786 | [0.5256, 0.6430] | yes |
+
+   The CNN's interval straddles 0.5. On the most distant quarter of unseen proteins the learned
+   encoder is indistinguishable from a coin. The hybrid does not rescue it there either, which
+   bounds the Phase 5c claim: supplying similarity helps where similarity exists to supply.
+
+### A claim in this area that was tested and withdrawn
+
+A first version of this table showed frozen ESM worst pooled but best in both low-homology bands,
+which would have reversed section 3 and justified routing by homology. It did not survive its own
+gates. The margin shrinks to +0.0136 and +0.0368 once the two defects in mistakes entry 37 are
+fixed; a bootstrap gives ESM minus k-mer **+0.0127, 95% [-0.0706, +0.1070]**, which includes
+zero; and **validation reverses the sign**, at -0.0819. Section 3's conclusion stands unchanged
+and no routing method is proposed. Recorded as mistakes entry 38.
+
+### 13.2 Three standard endpoints that a degenerate predictor wins
+
+A predictor that is **constant within each drug** carries no information about which unseen
+protein binds which drug, by construction. Measured on the DAVIS cold-target test partition:
+
+| control | pooled CI | full MSE | uncensored MSE | within-ligand CI |
+| --- | --- | --- | --- | --- |
+| per-drug mean of all its training pairs | **0.7633** | 0.5089 | 1.2570 | 0.5000 |
+| per-drug mean of its uncensored training pairs | 0.6121 | 1.5795 | **0.8113** | 0.5000 |
+| global training mean | 0.5000 | 0.6744 | 1.7913 | 0.5000 |
+| *trained CNN, for comparison* | *0.7885* | *0.3991* | *1.1237* | *0.6789* |
+| *k-mer baseline, for comparison* | *0.8385* | *0.3516* | *0.6875* | *0.7494* |
+
+* **Pooled CI cannot be used here.** The first control reaches 0.7633 against the trained CNN's
+  0.7885. The CNN's entire pooled margin over a predictor that knows nothing about proteins is
+  **+0.0252**. Most test pairs compare different drugs, so pooled CI is dominated by drug-level
+  ordering, which is not the question.
+* **Uncensored MSE alone cannot be used either.** The second control scores **0.8113**, beating
+  the trained CNN's 1.1237, while ordering nothing. It does not beat the k-mer baseline's 0.6875.
+* **Within-ligand CI is sound.** Every control scores exactly **0.5000**, which is why it is this
+  project's primary ordering endpoint.
+
+This is the third endpoint failure found in the project, after the residual-ordering endpoint of
+section 12.1 and the spread-ratio and uncensored-MSE endpoints proposed for a censoring-aware
+loss. The pattern is consistent: on a drug-by-target grid with a censored floor, any endpoint
+that does not hold the drug fixed can be won without learning anything about proteins.
+
+### 13.3 Phase 8, pre-registered before the runs
+
+The Phase 5c hybrid was measured on **one** partition. `kaggle/sc4001-phase8-davis-hybrid-confirm/`
+runs the hybrid and its width-matched control on s4002, s4003 and s4004, three seeds each,
+eighteen runs. Out-of-fold offsets for the three partitions are built and their leakage guard
+holds in every case (out-of-fold MSE 0.3943 / 0.4385 / 0.3892 against test 0.4260 / 0.3815 /
+0.5769, far from in-sample 0.0151 / 0.0220 / 0.0222).
+
+These are harder partitions than s4001, which matters: a confirmation that only repeated an easy
+case would prove little. k-mer reference figures per partition:
+
+| partition | k-mer test MSE | k-mer uncensored MSE | k-mer within-ligand CI |
+| --- | --- | --- | --- |
+| s4001 | 0.3516 | 0.6875 | 0.7494 |
+| s4002 | 0.4260 | 1.0551 | 0.8093 |
+| s4003 | 0.3815 | 0.9065 | 0.7629 |
+| s4004 | 0.5769 | 1.4281 | **0.6515** |
+
+**The bar, fixed before the runs.** Primary: paired-by-seed hybrid minus control on within-ligand
+CI, per partition; the claim "the hybrid beats a learned protein encoder" is confirmed only if
+the sign is positive on all three new partitions. Secondary: paired MSE and uncensored MSE
+against the same control. Reported but **not** a pass condition: hybrid minus k-mer, which Phase
+5c tied. The **four partitions** are the replication units; nine seeds inside one partition are
+not nine independent tests of the method.

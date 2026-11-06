@@ -386,6 +386,11 @@ sweep and for the KIBA pair, 21 runs in all, by inference on checkpoints that we
 already trained. Measured within-ligand score spread is 0.6203 on DAVIS and
 0.4436 on KIBA, and is the same for every arm because the test partition is.
 
+"DAVIS baseline" below is `outputs/nostop/baseline/phase2/davis/split_cold_target`, scored from
+`best.pt`. It is the same no-early-stop run that supplies the 0.6789 quoted in `update.md`, not
+the early-stopped run under `outputs/phase2`, which scores 0.6818. See the provenance note in
+`update.md` before recomputing any CNN figure.
+
 | arm | within-ligand CI | predicted spread | spread / measured | dMSE | dspread |
 | --- | --- | --- | --- | --- | --- |
 | DAVIS baseline | 0.6789 | 0.3679 | 0.576 | — | — |
