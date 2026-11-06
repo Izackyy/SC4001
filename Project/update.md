@@ -465,3 +465,75 @@ was pre-registered for the plain hybrid, not for this arm; Phase 6's own pre-reg
 was the MSE delta against the hybrid, and that came out null. Applying section 8's criterion
 here after seeing the numbers is post-hoc. Uncensored MSE is mixed against k-mer's 0.6875 in any
 case, signs + - +. Treat it as a lead to confirm on the other three cold-target partitions.
+
+## 12. Phase 7: the geometry check that killed the pooling hypothesis, and one locked null
+
+Two reviews rejected the attention-pooling plan before it was built, on the grounds that its
+motivating diagnostic had not ruled out a cheaper explanation and its primary endpoint was
+invalid. Both objections held up. No GPU was spent on any of this.
+
+### 12.1 The endpoint was invalid
+
+The plan's primary measure was the within-drug concordance between the network's own output and
+the residual truth, `score - offset`, with an assumed chance level of 0.5. Setting the network
+output to exactly `-offset` gives residual-ordering CI **0.7644** over all 66 matched drugs, 66
+of 66 above 0.5, and **0.6576** on uncensored pairs only - while the full prediction is constant
+and so has within-ligand CI **0.5000**. The offset shrinks extremes, so the residual is
+anti-correlated with it by construction, and 53.2% of within-drug test pairs are floor-floor,
+where the residual difference reinstates an order the assay reported as a tie. The replacement
+endpoint and its control are documented in the README.
+
+### 12.2 Mean pooling is not convicted
+
+Everything below is fitted on the 296 training targets only and scored on validation; test was
+not loaded.
+
+| protein space | val MSE | val pooled CI | val within-ligand CI |
+| --- | --- | --- | --- |
+| 3-mer cosine (reference) | 0.3088 | 0.8564 | 0.7956 |
+| ESM raw cosine | 0.4992 | 0.7801 | 0.7266 |
+| ESM centred (no hyperparameters) | 0.4184 | 0.8437 | 0.7838 |
+| ESM whitened (rank 256, lam 1e-3) | 0.3524 | 0.8620 | 0.7959 |
+| ESM supervised profile projection | 0.3720 | 0.8415 | 0.7719 |
+| 3-mer supervised profile projection | 0.3243 | 0.8565 | **0.8100** |
+| 3-mer, per-query rank weights | 0.3655 | 0.8516 | 0.7672 |
+| ESM raw, per-query rank weights | 0.5732 | 0.8161 | 0.7473 |
+
+Three readings, in order of how well they are supported:
+
+1. **The ESM ordering deficit was largely a cosine artefact.** Centring alone, parameter-free,
+   closes 83% of the gap; whitening closes it, and **42 of 42** whitening cells beat raw cosine.
+   So section 7's suspicion that whole-chain pooling destroys the pocket signal is not supported,
+   and the attention-pooling plan lost its motivation. Note the scope: this concerns cosine in
+   ESM space, the quantity the swapped-space test measured. Whether the *trained* ESM arm was
+   limited by the same anisotropy is untested, and a learned linear layer could absorb centring
+   on its own, so it probably was not.
+2. **The estimator was not the handicap.** Per-query rank weighting was the other candidate
+   explanation and it hurts everywhere, taking 3-mer from 0.7956 to 0.7672. The kNN weighting
+   rule is fine.
+3. **Supervision helps 3-mer and does nothing for ESM.** 8 of 42 cells beat the reference for
+   3-mer, 0 of 42 for ESM. ESM needed an unsupervised variance fix; 3-mer needed supervision.
+   With 296 targets and 1280 dimensions a supervised map on ESM simply overfits.
+
+### 12.3 The one locked test run, and it is a null
+
+The only arm that beat the reference on validation was the 3-mer supervised profile metric. Its
+configuration was locked by validation MSE, deliberately not by the metric being reported - the
+grid's best cell on within-ligand CI was rank 32 / penalty 1 at 0.8171 and was not used.
+
+| arm | test MSE | pooled CI | within-ligand CI | uncensored MSE | spread ratio | floor-vs-above CI |
+| --- | --- | --- | --- | --- | --- | --- |
+| 3-mer cosine | 0.3516 | 0.8385 | 0.7494 | 0.6875 | 0.771 | 0.7548 |
+| 3-mer supervised profile metric | 0.3689 | 0.8342 | 0.7515 | 0.8472 | 0.850 | 0.7744 |
+
+Primary endpoint, the paired per-drug within-ligand CI delta over 66 drugs: **+0.0021**, 95%
+bootstrap CI **[-0.0272, +0.0254]**. The interval includes zero, so by the rule fixed in advance
+this is **not a positive result**. Validation said +0.0144; test says +0.0021. 41 drugs improved,
+23 worsened, 2 unchanged, and the median (+0.0150) sits above the mean because one drug lands at
+-0.6613. Accuracy also got worse, clearly so on the measurable pairs.
+
+Two post-hoc observations, offered as leads and not as findings, because neither was
+pre-registered: floor-versus-above-floor ordering improved by +0.0196 with 42 drugs better and 21
+worse, and the prediction spread ratio rose from 0.771 to 0.850. Both were bought at a real cost
+in uncensored MSE, so "it separates binders from non-binders better" is a hypothesis for another
+partition, not a result here.
