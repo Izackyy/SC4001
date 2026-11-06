@@ -1172,6 +1172,32 @@ Two causes, both structural:
 floor-versus-above-floor subset reported separately and the `network = -offset` control reported
 beside it. The control is cheap and it is what makes the headline number interpretable.
 
+## Analysis scripts
+
+`analysis/` holds scoring that runs on **CPU from checkpoints already in `outputs/`**, so the
+numbers in `update.md` section 13 can be regenerated without a GPU and without retraining. Both
+take a few minutes.
+
+* `uv run python -m analysis.homology_bands` bins each cold-target test protein by its maximum
+  3-mer cosine to any training protein and re-scores every arm inside each band, on validation
+  and on test, with a bootstrap over the proteins of the hardest band. It prints the pooled
+  column too, which is the point: that column must reproduce the published figures (k-mer
+  0.7494, frozen ESM 0.6867, hybrid 0.7460) before the band columns mean anything.
+* `uv run python -m analysis.endpoint_controls` scores predictors that are constant within each
+  drug and therefore cannot order unseen proteins. It is the evidence that pooled CI and
+  uncensored MSE cannot carry a cold-target claim, and that within-ligand CI can.
+
+Two conventions are mandatory in anything added here, because breaking either produced wrong
+numbers once and neither raises an error:
+
+* Import `NEIGHBOURS` and `SHARPENINGS` from `src.kmer_baseline` rather than restating the grid.
+  The published optimum is 10**6 neighbours and a shorter local grid cannot reach it.
+* Compute a metric per seed and then average. Averaging predictions across seeds first is an
+  ensemble, a different and better estimator, worth about +0.037 within-ligand CI on the CNN.
+
+A script here that reproduces a published arm should print that arm's pooled figure and match it
+before any new number it prints is read.
+
 ## Version control
 
 The project is tracked from the repository root, one level above this directory.
