@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+data/raw/
+outputs/**/*.pt
+outputs/**/*.pt.tmp
+.pytest_cache/
+.env
+# Kaggle echoes the whole staged dataset back inside each pulled output; the source and
+# data/processed copies under it are already tracked at their real paths.
+outputs/kaggle_logs/*/sc4001/
