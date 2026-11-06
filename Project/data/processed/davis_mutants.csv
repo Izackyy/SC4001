@@ -1,0 +1,77 @@
+target_id,base,tag,phospho,kind,offset,constructible,reason,wild_type_id,n_edits,seq_len_before,seq_len_after
+ABL1(E255K),ABL1,E255K,False,substitution,37,True,,ABL1,1,1167,1167
+ABL1(F317I),ABL1,F317I,False,substitution,37,True,,ABL1,1,1167,1167
+ABL1(F317I)p,ABL1,F317I,True,substitution,37,True,,ABL1,1,1167,1167
+ABL1(F317L),ABL1,F317L,False,substitution,37,True,,ABL1,1,1167,1167
+ABL1(F317L)p,ABL1,F317L,True,substitution,37,True,,ABL1,1,1167,1167
+ABL1(H396P),ABL1,H396P,False,substitution,37,True,,ABL1,1,1167,1167
+ABL1(H396P)p,ABL1,H396P,True,substitution,37,True,,ABL1,1,1167,1167
+ABL1(M351T),ABL1,M351T,False,substitution,37,True,,ABL1,1,1167,1167
+ABL1(Q252H),ABL1,Q252H,False,substitution,37,True,,ABL1,1,1167,1167
+ABL1(Q252H)p,ABL1,Q252H,True,substitution,37,True,,ABL1,1,1167,1167
+ABL1(T315I),ABL1,T315I,False,substitution,37,True,,ABL1,1,1167,1167
+ABL1(T315I)p,ABL1,T315I,True,substitution,37,True,,ABL1,1,1167,1167
+ABL1(Y253F),ABL1,Y253F,False,substitution,37,True,,ABL1,1,1167,1167
+ABL1p,ABL1,,True,phosphorylation,37,False,phosphorylation does not change sequence,ABL1,0,1167,1167
+BRAF(V600E),BRAF,V600E,False,substitution,0,True,,BRAF,1,766,766
+EGFR(E746A750del),EGFR,E746A750del,False,deletion,0,True,,EGFR,5,1210,1205
+EGFR(G719C),EGFR,G719C,False,substitution,0,True,,EGFR,1,1210,1210
+EGFR(G719S),EGFR,G719S,False,substitution,0,True,,EGFR,1,1210,1210
+EGFR(L747E749del),EGFR,L747E749del,False,deletion,0,True,,EGFR,3,1210,1207
+EGFR(L747S752del),EGFR,L747S752del,False,deletion,0,True,,EGFR,6,1210,1204
+EGFR(L747T751del),EGFR,L747T751del,False,deletion,0,True,,EGFR,5,1210,1205
+EGFR(L858R),EGFR,L858R,False,substitution,0,True,,EGFR,1,1210,1210
+EGFR(L858RT790M),EGFR,L858RT790M,False,substitution,0,True,,EGFR,2,1210,1210
+EGFR(L861Q),EGFR,L861Q,False,substitution,0,True,,EGFR,1,1210,1210
+EGFR(S752I759del),EGFR,S752I759del,False,deletion,0,True,,EGFR,8,1210,1202
+EGFR(T790M),EGFR,T790M,False,substitution,0,True,,EGFR,1,1210,1210
+FGFR3(G697C),FGFR3,G697C,False,not_constructible,0,False,numbering unresolved (truncated construct),FGFR3,0,480,480
+FLT3(D835H),FLT3,D835H,False,substitution,0,True,,FLT3,1,993,993
+FLT3(D835Y),FLT3,D835Y,False,substitution,0,True,,FLT3,1,993,993
+FLT3(ITD),FLT3,ITD,False,not_constructible,0,False,ITD length unspecified,FLT3,0,993,993
+FLT3(K663Q),FLT3,K663Q,False,substitution,0,True,,FLT3,1,993,993
+FLT3(N841I),FLT3,N841I,False,substitution,0,True,,FLT3,1,993,993
+FLT3(R834Q),FLT3,R834Q,False,substitution,0,True,,FLT3,1,993,993
+GCN2(KinDom2S808G),GCN2,KinDom2S808G,False,not_constructible,0,False,wild type absent,,0,1649,1649
+JAK1(JH1domain-catalytic),JAK1,JH1domain-catalytic,False,not_constructible,0,False,wild type absent,,0,1154,1154
+JAK1(JH2domain-pseudokinase),JAK1,JH2domain-pseudokinase,False,not_constructible,0,False,wild type absent,,0,1154,1154
+JAK2(JH1domain-catalytic),JAK2,JH1domain-catalytic,False,not_constructible,0,False,wild type absent,,0,1132,1132
+JAK3(JH1domain-catalytic),JAK3,JH1domain-catalytic,False,not_constructible,0,False,wild type absent,,0,1124,1124
+KIT(A829P),KIT,A829P,False,substitution,0,True,,KIT,1,976,976
+KIT(D816H),KIT,D816H,False,substitution,0,True,,KIT,1,976,976
+KIT(D816V),KIT,D816V,False,substitution,0,True,,KIT,1,976,976
+KIT(L576P),KIT,L576P,False,substitution,0,True,,KIT,1,976,976
+KIT(V559D),KIT,V559D,False,substitution,0,True,,KIT,1,976,976
+KIT(V559D-T670I),KIT,V559D-T670I,False,substitution,0,True,,KIT,2,976,976
+KIT(V559D-V654A),KIT,V559D-V654A,False,substitution,0,True,,KIT,2,976,976
+LRRK2(G2019S),LRRK2,G2019S,False,substitution,0,True,,LRRK2,1,2527,2527
+MET(M1250T),MET,M1250T,False,substitution,0,True,,MET,1,1390,1390
+MET(Y1235D),MET,Y1235D,False,substitution,0,True,,MET,1,1390,1390
+PFCDPK1(Pfalciparum),PFCDPK1,Pfalciparum,False,not_constructible,0,False,wild type absent,,0,524,524
+PFPK5(Pfalciparum),PFPK5,Pfalciparum,False,not_constructible,0,False,wild type absent,,0,288,288
+PIK3CA(C420R),PIK3CA,C420R,False,substitution,1,True,,PIK3CA,1,1069,1069
+PIK3CA(E542K),PIK3CA,E542K,False,substitution,1,True,,PIK3CA,1,1069,1069
+PIK3CA(E545A),PIK3CA,E545A,False,substitution,1,True,,PIK3CA,1,1069,1069
+PIK3CA(E545K),PIK3CA,E545K,False,substitution,1,True,,PIK3CA,1,1069,1069
+PIK3CA(H1047L),PIK3CA,H1047L,False,substitution,1,True,,PIK3CA,1,1069,1069
+PIK3CA(H1047Y),PIK3CA,H1047Y,False,substitution,1,True,,PIK3CA,1,1069,1069
+PIK3CA(I800L),PIK3CA,I800L,False,substitution,1,True,,PIK3CA,1,1069,1069
+PIK3CA(M1043I),PIK3CA,M1043I,False,substitution,1,True,,PIK3CA,1,1069,1069
+PIK3CA(Q546K),PIK3CA,Q546K,False,substitution,1,True,,PIK3CA,1,1069,1069
+PKNB(Mtuberculosis),PKNB,Mtuberculosis,False,not_constructible,0,False,wild type absent,,0,626,626
+RET(M918T),RET,M918T,False,not_constructible,0,False,numbering unresolved (truncated construct),RET,0,458,458
+RET(V804L),RET,V804L,False,not_constructible,0,False,numbering unresolved (truncated construct),RET,0,458,458
+RET(V804M),RET,V804M,False,not_constructible,0,False,numbering unresolved (truncated construct),RET,0,458,458
+RPS6KA4(KinDom.1-N-terminal),RPS6KA4,KinDom.1-N-terminal,False,not_constructible,0,False,wild type absent,,0,772,772
+RPS6KA4(KinDom.2-C-terminal),RPS6KA4,KinDom.2-C-terminal,False,not_constructible,0,False,wild type absent,,0,772,772
+RPS6KA5(KinDom.1-N-terminal),RPS6KA5,KinDom.1-N-terminal,False,not_constructible,0,False,wild type absent,,0,802,802
+RPS6KA5(KinDom.2-C-terminal),RPS6KA5,KinDom.2-C-terminal,False,not_constructible,0,False,wild type absent,,0,802,802
+RSK1(KinDom.1-N-terminal),RSK1,KinDom.1-N-terminal,False,not_constructible,0,False,wild type absent,,0,735,735
+RSK1(KinDom.2-C-terminal),RSK1,KinDom.2-C-terminal,False,not_constructible,0,False,wild type absent,,0,735,735
+RSK2(KinDom.1-N-terminal),RSK2,KinDom.1-N-terminal,False,not_constructible,0,False,wild type absent,,0,740,740
+RSK3(KinDom.1-N-terminal),RSK3,KinDom.1-N-terminal,False,not_constructible,0,False,wild type absent,,0,733,733
+RSK3(KinDom.2-C-terminal),RSK3,KinDom.2-C-terminal,False,not_constructible,0,False,wild type absent,,0,733,733
+RSK4(KinDom.1-N-terminal),RSK4,KinDom.1-N-terminal,False,not_constructible,0,False,wild type absent,,0,745,745
+RSK4(KinDom.2-C-terminal),RSK4,KinDom.2-C-terminal,False,not_constructible,0,False,wild type absent,,0,745,745
+TYK2(JH1domain-catalytic),TYK2,JH1domain-catalytic,False,not_constructible,0,False,wild type absent,,0,1187,1187
+TYK2(JH2domain-pseudokinase),TYK2,JH2domain-pseudokinase,False,not_constructible,0,False,wild type absent,,0,1187,1187
